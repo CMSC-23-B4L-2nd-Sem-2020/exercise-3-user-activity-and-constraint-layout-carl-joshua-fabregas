@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -11,6 +12,7 @@ import android.widget.EditText
 import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
+    var count : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,20 +21,22 @@ class MainActivity : AppCompatActivity() {
         //2D array of ids
         val array = createArray()
 
+        val text_array = create_text_view()
+
         //retry button
         val ret_but = findViewById<Button>(R.id.retry)
 
         //add name requirement
         findViewById<Button>(R.id.done_button).setOnClickListener{
             addName(it)
-            show(array)
+            show(array, text_array)
         }
         //retry button listener
         ret_but.setOnClickListener{
-            retry(array)
+            retry(array,text_array)
         }
         //game mechanics
-        run(array, ret_but)
+        run(array, ret_but, text_array)
 
 
     }
@@ -108,18 +112,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun run(view: List<List<Int>>, butts: Button){ //the whole game process
+    private fun run(view: List<List<Int>>, butts: Button, text: List<Int>){ //the whole game process
         for (i in 0..4){
             for (j in 0..4){
                 //uses individual ids to see if clicked
                 findViewById<Button>(view[i][j]).setOnClickListener {
                     checker(view, i, j, butts)
+                    count++
+                    Log.d("TEST","entered here")
+
+                    findViewById<TextView>(text[0]).text = count.toString()
+                    findViewById<TextView>(text[1]).text = count.toString()
+                    findViewById<TextView>(text[2]).text = count.toString()
+                    findViewById<TextView>(text[3]).text = count.toString()
+
                 }
             }
         }
+
     }
 
-    private fun show(view: List<List<Int>>) { //shows the buttons/lights
+    private fun show(view: List<List<Int>>, text: List<Int>) { //shows the buttons/lights
         for (i in 0..4) {
             for (j in 0..4) {
                 val obj = findViewById<Button>(view[i][j])
@@ -130,11 +143,17 @@ class MainActivity : AppCompatActivity() {
                     break
                 }
             }
+            if(i<4){
+                if(findViewById<TextView>(text.get(i)).visibility == View.GONE){
+                    findViewById<TextView>(text.get(i)).visibility = View.VISIBLE
+                }
+            }
         }
+
     }
 
 
-    private fun retry(view: List<List<Int>>){ //resets the game without changing the name
+    private fun retry(view: List<List<Int>>, text: List<Int>){ //resets the game without changing the name
         for (i in 0..4){
             for (j in 0..4){
                 val temp = findViewById<Button>(view[i][j])
@@ -142,6 +161,11 @@ class MainActivity : AppCompatActivity() {
                 temp.setBackgroundColor(Color.parseColor("TEAL"))
             }
         }
+        count = 0;
+        findViewById<TextView>(text[0]).text = count.toString()
+        findViewById<TextView>(text[1]).text = count.toString()
+        findViewById<TextView>(text[2]).text = count.toString()
+        findViewById<TextView>(text[3]).text = count.toString()
     }
 
     private fun createArray(): List<List<Int>>{ //creates 5x5 array by creating 5 list arrays to represent each row then combining them to form the 2d array
@@ -187,6 +211,16 @@ class MainActivity : AppCompatActivity() {
         val twoD_Array : List<List<Int>> = listOf(first_row,second_row,third_row,fourth_row,fifth_row)
 
         return twoD_Array
+    }
+
+    private fun create_text_view():List<Int>{
+        val text_array: List<Int> = listOf(
+            R.id.num_of_clicks_1,
+            R.id.num_of_clicks_2,
+            R.id.num_of_clicks_3,
+            R.id.num_of_clicks_4
+        )
+        return  text_array
     }
 
 
